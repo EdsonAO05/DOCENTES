@@ -2,6 +2,12 @@ from flask import Flask, jsonify, request
 import json
 import yaml
 from dicttoxml import dicttoxml
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EXPORT_FOLDER = os.path.join(BASE_DIR, "DOCENTES")
+if not os.path.exists(EXPORT_FOLDER):
+    os.makedirs(EXPORT_FOLDER)
 
 app = Flask(__name__)
 
@@ -52,6 +58,7 @@ def listar_docentes():
 # --- Exportar JSON ---
 @app.route("/exportar/json", methods=["GET"])
 def exportar_json():
+    file_path = os.path.join(EXPORT_FOLDER, "docentes.json")
     with open("docentes.json", "w", encoding="utf-8") as f:
         json.dump(docentes, f, ensure_ascii=False, indent=4)
     return jsonify({"mensaje": "Archivo docentes.json generado correctamente"}), 200
@@ -59,6 +66,7 @@ def exportar_json():
 # --- Exportar YAML ---
 @app.route("/exportar/yaml", methods=["GET"])
 def exportar_yaml():
+    file_path = os.path.join(EXPORT_FOLDER, "docentes.yaml")
     with open("docentes.yaml", "w", encoding="utf-8") as f:
         yaml.dump(docentes, f, allow_unicode=True)
     return jsonify({"mensaje": "Archivo docentes.yaml generado correctamente"}), 200
@@ -66,6 +74,7 @@ def exportar_yaml():
 # --- Exportar XML ---
 @app.route("/exportar/xml", methods=["GET"])
 def exportar_xml():
+    file_path = os.path.join(EXPORT_FOLDER, "docentes.xml")
     xml_data = dicttoxml(docentes, custom_root="docentes", attr_type=False)
     with open("docentes.xml", "wb") as f:
         f.write(xml_data)
